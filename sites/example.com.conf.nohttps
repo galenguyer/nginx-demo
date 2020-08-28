@@ -1,0 +1,35 @@
+server {
+	# listen on port 80 for http requests
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+	# load custom mime types 
+        include /etc/nginx/mime.types;
+        
+	# set server name and other properties
+        server_name example.com www.example.com;
+        root /var/www/example.com;
+        index index.html index.htm;
+	try_files $uri $uri/ $uri.html =404;
+
+	# add cors header so linking works
+        add_header 'Access-Control-Allow-Origin' *;
+
+	# set a long cache time on most static assets
+        location ~* \.(?:ico|gif|jpe?g|png|woff2)$ {
+                expires 30d;
+                add_header Pragma public;
+                add_header Cache-Control "public";
+        }
+
+        # php settings if we need them in the future
+        #location ~ \.php$ {
+                #include /etc/nginx/snippets/fastcgi-php.conf;
+
+                # With php-fpm (or other unix sockets):
+                #fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+                # With php-cgi (or other tcp sockets):
+                #fastcgi_pass 127.0.0.1:9000;
+        #}
+}
+
